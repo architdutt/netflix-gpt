@@ -1,12 +1,24 @@
 import React, { useRef, useState } from "react";
 import Header from "./Header";
-import Body from "./Body";
 import { checkValidData } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
+import { updateProfile } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [isSignInForm, setIsSignInForm] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const navigate = useNavigate();
   const email = useRef(null);
   const password = useRef(null);
+  const name = useRef(null);
   const toggleSignInForm = () => {
     console.log("Sign up now");
     setIsSignInForm(!isSignInForm);
@@ -16,11 +28,82 @@ const Login = () => {
     console.log("Sign In");
     console.log(email.current.value);
     console.log(password.current.value);
+    const nameValue = name.current ? name.current.value : null;
+
+    console.log("isSignInForm", isSignInForm);
     const validationMessage = checkValidData(
       email.current.value,
-      password.current.value
+      password.current.value,
+      nameValue,
+      isSignInForm
     );
     console.log(validationMessage);
+    setErrorMessage(validationMessage);
+    if (validationMessage) return;
+    //sign in / sign up logic
+    if (!isSignInForm) {
+      console.log("Sign Up");
+
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed up
+          const user = userCredential.user;
+          console.log("signed up user =>", user);
+          updateProfile(auth.currentUser, {
+            displayName: name.current.value,
+            photoURL:
+              "https://lh3.googleusercontent.com/a/ACg8ocLB-mbF1mNQ1yw9EFnB7p619W6nvxx4-_TsySFVzTFIYgolQsIpcg=s360-c-no",
+          })
+            .then(() => {
+              // Profile updated!
+              console.log("Profile updated");
+
+              const { uid, displayName, email, photoURL } = auth.currentUser;
+              console.log("User is signed in", user);
+              dispatch(
+                addUser({
+                  uid: uid,
+                  displayName: displayName,
+                  email: email,
+                  photoURL: photoURL,
+                })
+              );
+              navigate("/browse");
+            })
+            .catch((error) => {
+              // An error occurred
+              // ...
+              setErrorMessage(error.message);
+            });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    } else {
+      console.log("Sign In");
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log("signed in the  user =>", user);
+          navigate("/browse");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-" + errorMessage);
+        });
+    }
   };
 
   return (
@@ -48,6 +131,7 @@ const Login = () => {
         {!isSignInForm && (
           <input
             type="text"
+            ref={name}
             placeholder="Enter Name"
             className="p-4 my-4 w-full bg-gray-600"
           />
@@ -57,8 +141,9 @@ const Login = () => {
           ref={password}
           type="password"
           placeholder="Password"
-          className="p-4 my-4 w-full bg-gray-600"
+          className="p-4 my-4 w-full bg-gray-600 border border-white"
         />
+        <p className="text-red-500 font-bold text-lg py-2">{errorMessage}</p>
         <button
           className="p-4 m-4 bg-red-500 w-full rounded-lg"
           onClick={handleSignIn}
