@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { USER_IMAGE } from "../utils/constant";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -55,8 +56,7 @@ const Login = () => {
           console.log("signed up user =>", user);
           updateProfile(auth.currentUser, {
             displayName: name.current.value,
-            photoURL:
-              "https://lh3.googleusercontent.com/a/ACg8ocLB-mbF1mNQ1yw9EFnB7p619W6nvxx4-_TsySFVzTFIYgolQsIpcg=s360-c-no",
+            photoURL: USER_IMAGE,
           })
             .then(() => {
               // Profile updated!
@@ -96,7 +96,6 @@ const Login = () => {
           // Signed in
           const user = userCredential.user;
           console.log("signed in the  user =>", user);
-          navigate("/browse");
         })
         .catch((error) => {
           const errorCode = error.code;
