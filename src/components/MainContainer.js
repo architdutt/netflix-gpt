@@ -10,6 +10,7 @@ const MainContainer = () => {
     return <div>Loading...</div>;
   }
 
+  // const mainMovie = movies.find((movie) => movie.vote_count < 1000);
   const mainMovie = movies[3];
 
   const { original_title, overview, id } = mainMovie;

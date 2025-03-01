@@ -1,20 +1,20 @@
 import { useDispatch } from "react-redux";
 import { API_OPTIONS } from "../utils/constant";
-import { addNowPlayingMovies } from "../utils/moviesSlice";
+import { addTopRatedMovies } from "../utils/moviesSlice";
 import { useEffect } from "react";
 
-export const useNowPlayingMovies = () => {
+export const useTopRatedMovies = () => {
   const dispatch = useDispatch();
 
-  const getNowplayingMovies = async () => {
+  const getTopRatedMovies = async () => {
     const data = await fetch(
-      "https://api.themoviedb.org/3/movie/now_playing?language=en-USpage=1",
+      "https://api.themoviedb.org/3/movie/top_rated?language=en-USpage=1",
       API_OPTIONS
     );
     const json = await data.json();
-    dispatch(addNowPlayingMovies(json.results));
+    dispatch(addTopRatedMovies(json.results));
   };
   useEffect(() => {
-    getNowplayingMovies();
+    getTopRatedMovies();
   }, []);
 };

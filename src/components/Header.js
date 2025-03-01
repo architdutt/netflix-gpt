@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { onAuthStateChanged } from "firebase/auth";
 import { addUser, removeUser } from "../utils/userSlice";
 import { LOGO } from "../utils/constant";
+import { toggleGptSearch } from "../utils/gptSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -47,14 +48,25 @@ const Header = () => {
 
     return () => unsubscribe();
   }, []);
+
+  const handleGptClick = () => {
+    console.log("GPT Search");
+    dispatch(toggleGptSearch());
+  };
   return (
-    <div className="absolute w-screen top-0 left-0 right-0 flex justify-between p-5 bg-gradient-to-b from-black z-10 flex">
+    <div className="absolute w-screen top-0 left-0 right-0 flex items-center justify-between p-5 bg-gradient-to-b from-black z-50">
       <img className="w-44" src={LOGO} alt="logo" />
       {user && (
-        <div className="flex items-center justify-between space-x-1">
+        <div className="flex items-center justify-between space-x-3 mr-10 ">
           <img src={user.photoURL} alt="" className="h-10 w-10 rounded-full" />
           <button
-            className="px-5 py-2 bg-red-600 text-white rounded-md mr-5"
+            className="py-2 px-4  mx-4 bg-orange-400 text-white rounded-lg"
+            onClick={handleGptClick}
+          >
+            GPT Search
+          </button>
+          <button
+            className="px-5 py-2 bg-red-600 text-white rounded-md mr-5 hover:bg-opacity-50"
             onClick={handleSignOut}
           >
             Sign Out
