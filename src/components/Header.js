@@ -12,8 +12,8 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+  const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
   const handleSignOut = () => {
-    console.log("Sign out");
     signOut(auth)
       .then(() => {
         // Sign-out successful.
@@ -30,7 +30,6 @@ const Header = () => {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
         const { uid, displayName, email, photoURL } = user;
-        console.log("User is signed in", user);
         dispatch(
           addUser({
             uid: uid,
@@ -50,11 +49,10 @@ const Header = () => {
   }, []);
 
   const handleGptClick = () => {
-    console.log("GPT Search");
     dispatch(toggleGptSearch());
   };
   return (
-    <div className="absolute w-screen top-0 left-0 right-0 flex items-center justify-between p-5 bg-gradient-to-b from-black z-50">
+    <div className="absolute w-screen top-0 left-0 right-0 flex flex-col md:flex-row items-center justify-between p-5 bg-gradient-to-b from-black z-50 sm:bg-green-300 md:bg-blue-500 lg:bg-black">
       <img className="w-44" src={LOGO} alt="logo" />
       {user && (
         <div className="flex items-center justify-between space-x-3 mr-10 ">
@@ -63,7 +61,7 @@ const Header = () => {
             className="py-2 px-4  mx-4 bg-orange-400 text-white rounded-lg"
             onClick={handleGptClick}
           >
-            GPT Search
+            {showGptSearch ? "Home" : "GPT Search"}
           </button>
           <button
             className="px-5 py-2 bg-red-600 text-white rounded-md mr-5 hover:bg-opacity-50"

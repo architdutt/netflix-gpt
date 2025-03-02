@@ -6,7 +6,7 @@ import VideoPlayer from "./VideoPlayer";
 const MainContainer = () => {
   const movies = useSelector((state) => state.movies?.nowPlayingMovies);
 
-  if (movies.length === 0) {
+  if (!movies) {
     return <div>Loading...</div>;
   }
 
